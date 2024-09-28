@@ -1,0 +1,29 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+table {
+    margin: 0 auto;
+    border-spacing: 5px;
+}
+
+td {
+    width: 30px;
+    height: 30px;
+}
+
+.pared {
+    background-color: #333; /* Esto sería para las paredes (puede ser distinto) */
+}
+
+.camino {
+    background-color: #fff; /* Caminos de color blanco */
+    border: 1px solid #ccc;
+}

@@ -1,13 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template
+from laberinto.laberinto import Laberinto
 
+app = Flask(__name__)
 
-# Aqui se inicializa la app y le decimos que utilice el folder templates como paginas html
-app = Flask(__name__, template_folder="templates")
-
-
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    lab = Laberinto(10, 10)  # Laberinto 10x10
+    lab.generar_laberinto()  # Genera el laberinto
+    matriz = lab.obtener_matriz()  # Obtiene la matriz del laberinto
+    return render_template('index.html', matriz=matriz)  # Pasa la matriz al template
 
-if (__name__ == '__main__'):
+if __name__ == '__main__':
     app.run(debug=True)

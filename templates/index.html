@@ -3,6 +3,17 @@
 {% block content %}
     <h2>Bienvenido al proyecto del Laberinto</h2>
     <p>Esto es un proyecto para resolver laberintos utilizando backtracking.</p>
+
+    <h2>Laberinto Generado</h2>
+    <table>
+        {% for fila in matriz %}
+        <tr>
+            {% for celda in fila %}
+            <!--La idea sería mostrar la matriz aquí-->>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
     <button>Generar Laberinto</button>
     <button>Resolver Laberinto</button>
 {% endblock %}
