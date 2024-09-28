@@ -9,7 +9,7 @@
         {% for fila in matriz %}
         <tr>
             {% for celda in fila %}
-            <!--La idea sería mostrar la matriz aquí-->>
+            <td class="{% if celda == 1 %}pared{% else %}camino{% endif %}"></td>
             {% endfor %}
         </tr>
         {% endfor %}
