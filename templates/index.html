@@ -5,15 +5,17 @@
     <p>Esto es un proyecto para resolver laberintos utilizando backtracking.</p>
 
     <h2>Laberinto Generado</h2>
-    <table>
-        {% for fila in matriz %}
-        <tr>
-            {% for celda in fila %}
-            <td class="{% if celda == 1 %}pared{% else %}camino{% endif %}"></td>
+    <div class="laberinto">
+        <table>
+            {% for fila in matriz %}
+            <tr>
+                {% for celda in fila %}
+                <td class="{% if celda == 1 %}pared{% else %}camino{% endif %}"></td>
+                {% endfor %}
+            </tr>
             {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
+        </table>
+    </div>
     <button>Generar Laberinto</button>
     <button>Resolver Laberinto</button>
 {% endblock %}
