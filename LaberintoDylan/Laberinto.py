@@ -132,6 +132,7 @@ class Laberinto:
             print(cadenaImprimir)
             cadenaImprimir = ""
 
+<<<<<<< HEAD:Laberinto-Dylan/Laberinto.py
     def guardarEnArchivo(self, nombreArchivo):
         #Abro el archivo en modo w para que borre el anterior en caso de existir y evitar problemas
         archivo = open(nombreArchivo, mode='w') #encoding="utf-8", 
@@ -166,3 +167,39 @@ prueba = Laberinto(5,5)
 prueba.generarMatriz()
 
 a = prueba.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/Laberinto-Dylan/Prueba.txt")
+=======
+    """
+    Resolución del laberinto utilizando los valores de cada una de las celdas.
+    Entradas: Coordenadas de inicio
+    Post-condición: La matriz asociada será marcada con el camino.
+    """
+    def resolverLaberinto(self, filaActual, columnaActual):
+        # Esta es la salida designada como salida (n-1, n-1)
+        if (filaActual == self.altura - 1 and columnaActual == self.ancho - 1):
+            self.matriz[filaActual][columnaActual].valor = "2"  # De momento se marca la salida con un "2"
+            return True
+        
+        # Validamos que la casilla actual sea un camino (valor '0')
+        if (self.matriz[filaActual][columnaActual].valor == "0"):
+            # Marcamos el camino actual como parte de la solución
+            self.matriz[filaActual][columnaActual].valor = "1" # Marcamos con un 1 temporal (para que sepa que no debe volver)
+
+            #Movimiento en todas las direcciones
+            for direccion in self.direcciones:
+                siguienteFila = filaActual + self.modificarDireccion[direccion]['fila']
+                siguienteColumna = columnaActual + self.modificarDireccion[direccion]['columna']
+
+                # Validación para no salirse del rango de columnas y filas
+                if (0 <= siguienteFila < self.altura and 0 <= siguienteColumna < self.ancho):
+                    # Decisión del backtracking
+                    if (self.resolverLaberinto(siguienteFila, siguienteColumna)):
+                        return True
+            # En el caso de que no se encuentre ninguna posible dirección entonces retrocedemos en una (marcando libre la celda actual)
+            self.matriz[filaActual][columnaActual].valor = "0"
+        
+        return False
+
+                    
+    def obtenerMatriz (self):
+        return self.matriz
+>>>>>>> origin/main:LaberintoDylan/Laberinto.py
