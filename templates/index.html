@@ -10,7 +10,12 @@
             {% for fila in matriz %}
             <tr>
                 {% for celda in fila %}
-                <td class="{% if celda == 1 %}pared{% else %}camino{% endif %}"></td>
+                <td class="
+                    {% if celda.caminos['n']['camino'] %}sin-pared-norte {% endif %}
+                    {% if celda.caminos['s']['camino'] %}sin-pared-sur {% endif %}
+                    {% if celda.caminos['e']['camino'] %}sin-pared-este {% endif %}
+                    {% if celda.caminos['o']['camino'] %}sin-pared-oeste {% endif %}
+                "></td>
                 {% endfor %}
             </tr>
             {% endfor %}

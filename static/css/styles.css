@@ -28,13 +28,21 @@ td {
     height: 10px;
 }
 
-.pared {
-    background-color: #333; /* Esto sería para las paredes (puede ser distinto) */
+
+.sin-pared-norte {
+    border-top: none;
 }
 
-.camino {
-    background-color: #fff; /* Caminos de color blanco */
-    border: .1px solid #ccc;
+.sin-pared-sur {
+    border-bottom: none;
+}
+
+.sin-pared-este {
+    border-right: none;
+}
+
+.sin-pared-oeste {
+    border-left: none;
 }
 
 button {
