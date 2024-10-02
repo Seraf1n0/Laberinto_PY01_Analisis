@@ -131,6 +131,38 @@ class Laberinto:
                         cadenaImprimir += " |"
             print(cadenaImprimir)
             cadenaImprimir = ""
+
+    def guardarEnArchivo(self, nombreArchivo):
+        #Abro el archivo en modo w para que borre el anterior en caso de existir y evitar problemas
+        archivo = open(nombreArchivo, mode='w') #encoding="utf-8", 
+        #Ahora tendría que iterar para escribir todo
+        lineaInicio = str(self.altura) + "," + str(self.ancho) + "\n"
+        archivo.write(lineaInicio)   #No olvidarme de escribir los saltos de línea
+        
+        for fila in range(self.altura):
+            for columna in range(self.ancho):
+                #Tendría que añadir una línea al archivo indicando lo que dice el diccionario
+                booleanoN = self.matriz[fila][columna].caminos['n']['camino']
+                booleanoS = self.matriz[fila][columna].caminos['s']['camino']
+                booleanoE = self.matriz[fila][columna].caminos['e']['camino']
+                booleanoO = self.matriz[fila][columna].caminos['o']['camino']
+                lineaEscribir = "n," + str(booleanoN) + ",s," + str(booleanoS) + ",e," + str(booleanoE) + ",o," + str(booleanoO) 
+
+
+
+                #If para añadir el salto de línea y que no me quede una vacía al final
+                if(fila == (self.altura -1) and columna == (self.ancho -1)):
+                    #Solo añado y no le pongo el salto de línea
+                    archivo.write(lineaEscribir)
+                else:
                     
+                    #No es la última línea, le pongo el salto
+                    lineaEscribir += "\n"
+                    archivo.write(lineaEscribir)
+
+        archivo.close()
+
 prueba = Laberinto(5,5)
 prueba.generarMatriz()
+
+a = prueba.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/Laberinto-Dylan/Prueba.txt")
