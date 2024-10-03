@@ -4,7 +4,7 @@ import copy
 #De momento aquí para evitarme el errorsh
 class ElementoLaberinto:
     def __init__(self):
-        self.valor = "1"
+        self.valor = 1
         self.visitado = False
         self.posicionAnteriorFila = None 
         self.posicionAnteriorColumna = None 
@@ -143,6 +143,37 @@ class Laberinto:
         # Marcado y retroceso
         self.matriz[filaActual][columnaActual].visitado = False
         return False
+
+    """
+    Normalización de laberinto
+    Utiliza la matriz asociada para normalizarla, en caso de estar rodeada de paredes entonces es una pared,
+    y en caso de ser un camino es porque tiene alguna dirección abierta
+    Post-condición: La matriz queda con valores 1, 0 y 2 para hacer más facil el analisis en la solución del algoritmo.
+    """
+    def normalizarLaberinto(self):
+        for i in range(self.altura):
+            for j in range(self.ancho):
+                celda = self.matriz[i][j]
+                
+                # Por cada dirección vamos a ver si la celda tiene un camino
+                esCamino = False
+                for direccion in ['n', 's', 'e', 'o']:
+                    if celda.caminos[direccion]['camino']:
+                        esCamino = True
+                        break
+
+                if esCamino:
+                    celda.valor = 0
+                else:
+                    celda.valor = 1
+
+        # Salida, va a cambiar
+        self.matriz[self.altura - 1][self.ancho - 1].valor = 2
+
+
+    def imprimirNormalizado (self):
+        for fila in self.matriz:
+            print(' '.join([str(celda.valor) for celda in fila]))
 
     def guardarEnArchivo(self, nombreArchivo):
         #Abro el archivo en modo w para que borre el anterior en caso de existir y evitar problemas
