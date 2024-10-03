@@ -1,51 +1,79 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
 }
 
-
 h1, h2, p {
     text-align: center;
-}
-
-
-table {
-    margin: 0 auto;
-    border-spacing: 0px;
+    color: #333;
 }
 
 .laberinto {
     display: flex;
     justify-content: center;
-    min-width: 100vw;
     align-items: center;
+    margin-top: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
 }
 
 td {
-    width: 10px;
-    height: 10px;
+    width: 30px;
+    height: 30px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-
+/* Paredes */
 .sin-pared-norte {
-    border-top: none;
+    border-top: 3px solid #333;
 }
 
 .sin-pared-sur {
-    border-bottom: none;
+    border-bottom: 3px solid #333;
 }
 
 .sin-pared-este {
-    border-right: none;
+    border-right: 3px solid #333;
 }
 
 .sin-pared-oeste {
-    border-left: none;
+    border-left: 3px solid #333;
 }
 
+/* Caminos */
+td:not(.sin-pared-norte):not(.sin-pared-sur):not(.sin-pared-este):not(.sin-pared-oeste) {
+    background-color: #e0f7fa; /* Color para los caminos */
+}
+
+td.sin-pared-norte, td.sin-pared-sur, td.sin-pared-este, td.sin-pared-oeste {
+    background-color: #ffffff; /* Color para las celdas con pared */
+}
+
+/* hover (efecto pal cursor) */
+td:hover {
+    background-color: #b2ebf2;
+    box-shadow: 0px 0px 8px rgba(0, 128, 128, 0.8);
+}
+
+/* El estilo para los botones*/
 button {
-    display: flex;
-    align-content: center;
+    background-color: #00796b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #004d40;
 }
