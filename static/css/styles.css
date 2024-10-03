@@ -10,11 +10,25 @@ h1, h2, p {
     color: #333;
 }
 
+.configuracion-laberinto {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#tamanoLaberinto {
+    margin-left: 10px;
+    width: 60px;
+    padding: 5px;
+    font-size: 16px;
+}
+
 .laberinto {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 20px 0;
 }
 
 table {
@@ -61,6 +75,13 @@ td:hover {
     box-shadow: 0px 0px 8px rgba(0, 128, 128, 0.8);
 }
 
+.botones-laberinto {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Espacio entre botones */
+    margin-top: 20px;
+}
+
 /* El estilo para los botones*/
 button {
     background-color: #00796b;
@@ -69,7 +90,6 @@ button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    margin: 10px;
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
