@@ -139,29 +139,33 @@ class Laberinto:
     Post-condición: La matriz asociada será marcada con el camino.
     """
     def resolverLaberinto(self, filaActual, columnaActual):
-        # Verificar si hemos llegado a la salida (n-1, n-1)
-        if filaActual == self.altura - 1 and columnaActual == self.ancho - 1:
-            self.matriz[filaActual][columnaActual].valor = "2"  # Marcamos la salida
+        # Condición de parada de recursión, para saber si se ha llegado a la salida
+        if self.matriz[filaActual][columnaActual] == 2:
+            self.matriz[filaActual][columnaActual].valor = 0  # Marcamos la salida en la solución.
             return True
 
-        # Marcamos la celda actual como visitada para no regresar
+        # Se marca la celda como visitada (no sirve tanto) y con un numero que indique que por ese lado no puede irse.
         self.matriz[filaActual][columnaActual].visitado = True
+        self.matriz[filaActual][columnaActual].valor = 0  # Marcamos el camino recorrido con un numero identificando un camino temporal de solución
 
-        # Movimientos en cada una de las direcciones utulizando el diccionario de direcciones
+        # Se probará cada direccion de la celda
         for direccion in self.direcciones:
             siguienteFila = filaActual + self.modificarDireccion[direccion]['fila']
             siguienteColumna = columnaActual + self.modificarDireccion[direccion]['columna']
 
-            # Validar si podemos movernos en esa dirección (que haya un camino y no esté fuera de los límites), que haya camino y que no haya sido visitado
-            if (0 <= siguienteFila < self.altura and 0 <= siguienteColumna < self.ancho and self.matriz[filaActual][columnaActual].caminos[direccion]['camino'] and not self.matriz[siguienteFila][siguienteColumna].visitado):
+            # Vemos si en la siguiente celda (usando direcciones) es posible seguir
+            if (0 <= siguienteFila < self.altura and 0 <= siguienteColumna < self.ancho 
+                and self.matriz[filaActual][columnaActual].caminos[direccion]['camino'] 
+                and not self.matriz[siguienteFila][siguienteColumna].visitado):
 
-                # Backtracking: Si no puedo moverme a ninguna dirección retroceso desmarcando el visitado de la celda actual
-                if self.resolverLaberinto(siguienteFila, siguienteColumna):
+                # Backtracking usando la casilla siguiente
+                if self.resolver_laberinto(siguienteFila, siguienteColumna):
                     return True
 
-        # Marcado y retroceso
+        # En el caso de no haber posibilidad de moverse a alguna dirección entonces retrocedemos
         self.matriz[filaActual][columnaActual].visitado = False
         return False
+
 
     """
     Normalización de laberinto
