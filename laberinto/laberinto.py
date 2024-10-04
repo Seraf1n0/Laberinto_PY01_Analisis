@@ -47,8 +47,13 @@ class Laberinto:
             }
 
             #Para cargar la matriz
-            self.leerLaberintoDeArchivo(rutaArchivo)
-            self.cantidadCeldas = self.ancho * self.altura
+            if(self.leerLaberintoDeArchivo(rutaArchivo)):
+                self.laberintoCargado = True
+
+                self.cantidadCeldas = self.ancho * self.altura
+            else:
+                #No se cargó el laberinto
+                self.laberintoCargado = False
 
 
     def generarMatriz(self):
@@ -71,7 +76,8 @@ class Laberinto:
         columna = 0
         #self.matriz[fila][columna].posicionAnteriorFila = fila
         #self.matriz[fila][columna].posicionAnteriorColumna = columna  #No debería de ponerle al primero eso
-
+        self.matriz[self.altura-1][0].posicionAnteriorColumna = 1
+        self.matriz[self.altura-1][0].posicionAnteriorFila = 0
         completado = False
         moverse = False
         ciclos = 0
@@ -81,6 +87,12 @@ class Laberinto:
         while not completado:
             moverse = False
             #Pongo en las visitadas la posición actual
+            if(fila is None or columna is None):
+                #Vuelvo a generar otro laberinto
+                self.celdasVisitadas = 1
+                self.matriz = []
+                return self.generarMatriz
+            
             self.matriz[fila][columna].visitado = True
 
             #Ahora voy con lo del número de loops para darle aletoriedad
@@ -122,14 +134,20 @@ class Laberinto:
 
             #Al salir del for verifico si me moví, en caso contrario me muevo a la casilla anterior
             if not moverse:
-                fila = self.matriz[fila][columna].posicionAnteriorFila #Pongo la fila anterior
-                columna = self.matriz[fila][columna].posicionAnteriorColumna  #Pongo la columna anterior 
-            
+                if(self.matriz[fila][columna].posicionAnteriorFila is not None and self.matriz[fila][columna].posicionAnteriorColumna is not None):
+                    fila = self.matriz[fila][columna].posicionAnteriorFila #Pongo la fila anterior
+                    columna = self.matriz[fila][columna].posicionAnteriorColumna  #Pongo la columna anterior 
+                else:
+                    #Para no complicarme en este caso genero otro laberinto y ya
+                    print("Es none los indices anteriores")
+                    self.celdasVisitadas = 1
+                    self.matriz = []
+                    return self.generarMatriz()
+                    
             if(self.celdasVisitadas == self.cantidadCeldas):
                 
                 completado = True
-        print("Terminé el laberinto")
-        self.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
+       
         
     def imprimirLaberinto(self):
         for fila in self.matriz:
@@ -237,64 +255,67 @@ class Laberinto:
         archivo.close()
 
     def leerLaberintoDeArchivo(self, rutaArchivo):
-        if(self.totalLineasArchivo(rutaArchivo) > 0):
-            fila = 0
-            columna = 0
-            with open(rutaArchivo, 'r') as archivo:
-                primeraLinea = True
-                lineaDimensiones = True
-                for linea in archivo:
-                    if(primeraLinea):
-                        #Estoy en la primera línea, verifico que el texto sea el correcto
-                        if(linea.rstrip('\n') == "" or linea.rstrip('\n')  != "Laberinto"):
-                            return False #No es un archivo apto para leersh
-                        primeraLinea = False
-                    else:
-                        #Después de la primera línea tengo que leer la cantidad de filas y columnas
-                        if(lineaDimensiones):
-                            listaDimensiones = linea.rstrip('\n').split(",")
-                            self.altura, self.ancho = int(listaDimensiones[0]), int(listaDimensiones[1]) #Filas, columnas
-                            self.matriz = [[ElementoLaberinto() for _ in range(self.ancho)] for _ in range(self.altura)]
-                            lineaDimensiones = False
+        if os.path.exists(rutaArchivo):
+            if(self.totalLineasArchivo(rutaArchivo) > 0):
+                fila = 0
+                columna = 0
+                with open(rutaArchivo, 'r') as archivo:
+                    primeraLinea = True
+                    lineaDimensiones = True
+                    for linea in archivo:
+                        if(primeraLinea):
+                            #Estoy en la primera línea, verifico que el texto sea el correcto
+                            if(linea.rstrip('\n') == "" or linea.rstrip('\n')  != "Laberinto"):
+                                return False #No es un archivo apto para leersh
+                            primeraLinea = False
                         else:
-                            #Ya tocaría leersh todas las demás líneas
-                        
-                            listaParedes = linea.rstrip('\n').split(",")
-                            #Tengo que poner los boleanos indicando las paredes
-                            if(listaParedes[1] == "True"):
-                                paredN = True
+                            #Después de la primera línea tengo que leer la cantidad de filas y columnas
+                            if(lineaDimensiones):
+                                listaDimensiones = linea.rstrip('\n').split(",")
+                                self.altura, self.ancho = int(listaDimensiones[0]), int(listaDimensiones[1]) #Filas, columnas
+                                self.matriz = [[ElementoLaberinto() for _ in range(self.ancho)] for _ in range(self.altura)]
+                                lineaDimensiones = False
                             else:
-                                paredN = False
-                                
-                            if(listaParedes[3] == "True"):
-                                paredS = True
-                            else:
-                                paredS = False
-
-                            if(listaParedes[5] == "True"):
-                                paredE = True
-                            else:
-                                paredE = False
-                                    
-                            if(listaParedes[7] == "True"):
-                                paredO = True
-                            else:
-                                paredO = False
-
-                            #Ahora añado todos los valores al diccionario
-                            self.matriz[fila][columna].caminos[listaParedes[0]]['camino'] = paredN
-                            self.matriz[fila][columna].caminos[listaParedes[2]]['camino'] = paredS
-                            self.matriz[fila][columna].caminos[listaParedes[4]]['camino'] = paredE
-                            self.matriz[fila][columna].caminos[listaParedes[6]]['camino'] = paredO 
+                                #Ya tocaría leersh todas las demás líneas
                             
-                            columna += 1
-                            if(columna == self.ancho):
-                                columna = 0
-                                fila +=1
+                                listaParedes = linea.rstrip('\n').split(",")
+                                #Tengo que poner los boleanos indicando las paredes
+                                if(listaParedes[1] == "True"):
+                                    paredN = True
+                                else:
+                                    paredN = False
+                                    
+                                if(listaParedes[3] == "True"):
+                                    paredS = True
+                                else:
+                                    paredS = False
 
+                                if(listaParedes[5] == "True"):
+                                    paredE = True
+                                else:
+                                    paredE = False
+                                        
+                                if(listaParedes[7] == "True"):
+                                    paredO = True
+                                else:
+                                    paredO = False
 
+                                #Ahora añado todos los valores al diccionario
+                                self.matriz[fila][columna].caminos[listaParedes[0]]['camino'] = paredN
+                                self.matriz[fila][columna].caminos[listaParedes[2]]['camino'] = paredS
+                                self.matriz[fila][columna].caminos[listaParedes[4]]['camino'] = paredE
+                                self.matriz[fila][columna].caminos[listaParedes[6]]['camino'] = paredO 
+                                
+                                columna += 1
+                                if(columna == self.ancho):
+                                    columna = 0
+                                    fila +=1
+                    return True
+
+            else:
+                return False #El archivo no tenía líneas para leersh
         else:
-            return False #El archivo no tenía líneas para leersh
+            return False
 
     def totalLineasArchivo(self, rutaArchivo):
         contador = 0
@@ -308,6 +329,6 @@ class Laberinto:
     def obtenerMatriz(self):
         return self.matriz
     
-#a = Laberinto(5,5,"C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/uploads/laberintoPruebaMediaNoche.txt" )
+#a = Laberinto(5,5,"c:/Users/Dylan/Documents/Laberinto_PY01_Analisis/uploads/laberintoPruebaMediaNoche.txt")
 #a.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
 #a.normalizarLaberinto()
