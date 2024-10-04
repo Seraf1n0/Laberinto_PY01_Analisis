@@ -44,11 +44,27 @@ def index(laberinto = None, mensajeDeError = None):
 
 @app.route('/guardarLaberinto', methods=['POST'])
 def guardarLaberinto():
-    print("Llegué a guardarsh")
+    
     global matrizG
-    matrizG.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
-    print("Guardé la matriz")
-    return send_file("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt", as_attachment=True)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Crear la ruta completa para la carpeta 'preparando'
+    save_dir = os.path.join(base_dir, 'preparando')
+    
+    # Crear la carpeta 'preparando' si no existe
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    
+    # Ruta completa del archivo donde se guardará el laberinto
+    file_path = os.path.join(save_dir, 'laberinto.txt')
+    file_path = file_path.replace("\\", "/")
+    # Guardar la matriz en el archivo
+    matrizG.guardarEnArchivo(file_path)
+    
+    print("Guardé la matriz en:", file_path)
+    
+    # Enviar el archivo como una descarga
+    return send_file(file_path, as_attachment=True)
     
 @app.route('/upload', methods=['POST'])
 def upload_file():
