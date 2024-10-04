@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    lab = Laberinto(10, 10)  # Laberinto 10x10
-    lab.generarMatriz()  # Genera el laberinto
+    lab = Laberinto(3, 3)  # Laberinto 10x10
+    #Ya no hace falta mandarlo a crear la matriz, él solito lo hace
     # Prueba para normalización
     lab.normalizarLaberinto()
     lab.imprimirNormalizado()

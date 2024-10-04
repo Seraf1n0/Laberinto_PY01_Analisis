@@ -125,8 +125,9 @@ class Laberinto:
                 columna = self.matriz[fila][columna].posicionAnteriorColumna  #Pongo la columna anterior 
             
             if(self.celdasVisitadas == self.cantidadCeldas):
+                
                 completado = True
-           
+        print("Terminé el laberinto")
 
     def imprimirLaberinto(self):
         for fila in self.matriz:
@@ -295,4 +296,5 @@ class Laberinto:
     def obtenerMatriz(self):
         return self.matriz
     
-a = Laberinto(5,5)
+a = Laberinto(3,3)
+a.normalizarLaberinto()
