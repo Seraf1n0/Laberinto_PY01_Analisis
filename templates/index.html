@@ -4,18 +4,31 @@
     <h2>Bienvenido al proyecto del Laberinto</h2>
     <p>Esto es un proyecto para resolver laberintos utilizando backtracking.</p>
 
+    <div class="configuracion-laberinto"> <!--Div para el spinbox de tamaños-->
+        <label for="tamanoLaberinto">Tamaño del laberinto (nxn): </label>
+        <input type="number" id="tamanoLaberinto" name="tamanoLaberinto" value="10" min="10" max="30" step="1">
+    </div>
+
     <h2>Laberinto Generado</h2>
-    <div class="laberinto">
+    <div class="laberinto"> <!--Div para el laberinto a mostrar, toma la matriz de parametro en app.py-->
         <table>
             {% for fila in matriz %}
             <tr>
                 {% for celda in fila %}
-                <td class="{% if celda == 1 %}pared{% else %}camino{% endif %}"></td>
+                <td class="
+                    {% if celda.caminos['n']['camino'] %}sin-pared-norte {% endif %}
+                    {% if celda.caminos['s']['camino'] %}sin-pared-sur {% endif %}
+                    {% if celda.caminos['e']['camino'] %}sin-pared-este {% endif %}
+                    {% if celda.caminos['o']['camino'] %}sin-pared-oeste {% endif %}
+                "></td>
                 {% endfor %}
             </tr>
             {% endfor %}
         </table>
     </div>
-    <button>Generar Laberinto</button>
-    <button>Resolver Laberinto</button>
+
+    <div class="botones-laberinto"> <!--Div para botones de funcionalidades-->
+        <button id="btnGenerar">Generar Laberinto</button>
+        <button id="btnResolver">Resolver Laberinto</button>
+    </div>
 {% endblock %}
