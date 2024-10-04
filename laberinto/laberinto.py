@@ -142,7 +142,7 @@ class Laberinto:
     """
     def resolverLaberinto(self, filaActual, columnaActual):
         # Condición de parada de recursión, para saber si se ha llegado a la salida
-        if filaActual == self.altura - 1 and columnaActual == self.ancho - 1:
+        if filaActual == (1 - 1) and columnaActual == self.ancho - 1:
             self.matriz[filaActual][columnaActual].valor = 3  # La salida forma parte de la solución
             self.solucion.append((filaActual, columnaActual))  # Almacenamos la salida en la solución
             return True
@@ -167,17 +167,21 @@ class Laberinto:
                 if self.resolverLaberinto(siguienteFila, siguienteColumna):
                     return True
 
-
         # En el caso de no haber posibilidad de moverse a alguna dirección entonces retrocedemos
         self.matriz[filaActual][columnaActual].valor = 4  # Retroceso
         self.solucion.pop()  # Eliminar la celda actual de la solución
         return False
 
-    def mostrarSolucion(self):        
+    def reiniciarVisitados (self):
+        for i in range(self.altura):
+            for j in range(self.ancho):
+                self.matriz[i][j].visitado = False # Reiniciar como 
+                self.matriz[i][j].valor = 1
+
+    def mostrarSolucion(self):
         print("Solución encontrada, paso a paso:")
         for paso, (fila, columna) in enumerate(self.solucion):
             print(f"Paso {paso + 1}: Coordenada (Fila {fila}, Columna {columna})")
-
 
     """
     Normalización de laberinto
@@ -251,7 +255,7 @@ class Laberinto:
                     if(primeraLinea):
                         #Estoy en la primera línea, verifico que el texto sea el correcto
                         if(linea.rstrip('\n') == "" or linea.rstrip('\n')  != "Laberinto"):
-                            return False #No es un archivo apto para leersh
+                            return False #No es un archivo apto para leer
                         primeraLinea = False
                     else:
                         #Después de la primera línea tengo que leer la cantidad de filas y columnas
@@ -261,7 +265,7 @@ class Laberinto:
                             self.matriz = [[ElementoLaberinto() for _ in range(self.ancho)] for _ in range(self.altura)]
                             lineaDimensiones = False
                         else:
-                            #Ya tocaría leersh todas las demás líneas
+                            #Ya tocaría leer todas las demás líneas
                         
                             listaParedes = linea.rstrip('\n').split(",")
                             #Tengo que poner los boleanos indicando las paredes
@@ -298,7 +302,7 @@ class Laberinto:
 
 
         else:
-            return False #El archivo no tenía líneas para leersh
+            return False #El archivo no tenía líneas para leer
 
     def totalLineasArchivo(self, rutaArchivo):
         contador = 0
@@ -311,4 +315,3 @@ class Laberinto:
 
     def obtenerMatriz(self):
         return self.matriz
-    

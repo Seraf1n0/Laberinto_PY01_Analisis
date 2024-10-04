@@ -6,10 +6,12 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     lab = Laberinto(7, 7)  # Laberinto 10x10
-    # Prueba para normalización
-    matriz = lab.obtenerMatriz()  # Obtiene la matriz del laberinto
+    lab.reiniciarVisitados()
+    # Prueba de solución por resolución backtracking
     lab.resolverLaberinto(0, 0)
+    lab.imprimirLaberinto()
     lab.mostrarSolucion()
+    matriz = lab.obtenerMatriz()  # Obtiene la matriz del laberinto
     return render_template('index.html', matriz=matriz)  # Pasa la matriz al template
 
 if __name__ == '__main__':

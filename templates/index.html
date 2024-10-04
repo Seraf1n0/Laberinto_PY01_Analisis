@@ -16,10 +16,11 @@
             <tr>
                 {% for celda in fila %}
                 <td class="
-                    {% if celda.caminos['n']['camino'] %}sin-pared-norte {% endif %}
-                    {% if celda.caminos['s']['camino'] %}sin-pared-sur {% endif %}
-                    {% if celda.caminos['e']['camino'] %}sin-pared-este {% endif %}
-                    {% if celda.caminos['o']['camino'] %}sin-pared-oeste {% endif %}
+                    {% if not celda.caminos['n']['camino'] %}sin-pared-norte {% endif %}
+                    {% if not celda.caminos['s']['camino'] %}sin-pared-sur {% endif %}
+                    {% if not celda.caminos['e']['camino'] %}sin-pared-este {% endif %}
+                    {% if not celda.caminos['o']['camino'] %}sin-pared-oeste {% endif %}
+                    {% if celda.visitado %}solucion {% endif %}
                 "></td>
                 {% endfor %}
             </tr>

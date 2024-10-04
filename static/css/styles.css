@@ -60,6 +60,12 @@ td {
     border-left: 3px solid #333;
 }
 
+/* Solución */
+.solucion {
+    background-color: #00796b;
+    transition: all 300ms ease-in-out 1s;
+}
+
 /* Caminos */
 td:not(.sin-pared-norte):not(.sin-pared-sur):not(.sin-pared-este):not(.sin-pared-oeste) {
     background-color: #e0f7fa; /* Color para los caminos */
