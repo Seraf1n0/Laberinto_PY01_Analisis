@@ -1,5 +1,6 @@
 import random
 import copy
+import os
 
 #De momento aquí para evitarme el errorsh
 class ElementoLaberinto:
@@ -58,9 +59,9 @@ class Laberinto:
         elemento.valor = "0"
         self.matriz[self.altura-1][0] = elemento
 
-        print("Primera impresión")
-        self.imprimirLaberinto()
-        print("==============================")
+        #print("Primera impresión")
+        #self.imprimirLaberinto()
+        #print("==============================")
 
         return self.generarLaberinto()
     
@@ -68,8 +69,8 @@ class Laberinto:
         #Tiene que ser recursivo
         fila = self.altura - 1
         columna = 0
-        self.matriz[fila][columna].posicionAnteriorFila = fila
-        self.matriz[fila][columna].posicionAnteriorColumna = columna
+        #self.matriz[fila][columna].posicionAnteriorFila = fila
+        #self.matriz[fila][columna].posicionAnteriorColumna = columna  #No debería de ponerle al primero eso
 
         completado = False
         moverse = False
@@ -110,9 +111,9 @@ class Laberinto:
                         fila, columna =  siguienteFila, siguienteColumna
 
                         #Imprimo el laberinto para ver el progreso
-                        print("==============================")
-                        self.imprimirLaberinto()
-                        print("==============================")
+                        #print("==============================")
+                        #self.imprimirLaberinto()
+                        #print("==============================")
 
                         #Llamada recursiva a la función. Ahora la fila y la columnna actual son siguienteFila y siguienteColumna+
                         self.celdasVisitadas += 1
@@ -128,7 +129,8 @@ class Laberinto:
                 
                 completado = True
         print("Terminé el laberinto")
-
+        self.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
+        
     def imprimirLaberinto(self):
         for fila in self.matriz:
             print(" ".join(["P" if celda.visitado else "X" for celda in fila]))
@@ -199,10 +201,16 @@ class Laberinto:
             print(' '.join([str(celda.valor) for celda in fila]))
 
     def guardarEnArchivo(self, nombreArchivo):
+        #ruta_directorio = os.path.dirname(os.path.abspath(__file__))
+
+        # Ruta completa del archivo de texto
+        #ruta_archivo = os.path.join(ruta_directorio, nombreArchivo)
+
+
         #Abro el archivo en modo w para que borre el anterior en caso de existir y evitar problemas
         archivo = open(nombreArchivo, mode='w') #encoding="utf-8", 
         #Ahora tendría que iterar para escribir todo
-        lineaInicio = str(self.altura) + "," + str(self.ancho) + "\n"
+        lineaInicio = "Laberinto\n"+ str(self.altura) + "," + str(self.ancho) + "\n"
         archivo.write(lineaInicio)   #No olvidarme de escribir los saltos de línea
         
         for fila in range(self.altura):
@@ -268,7 +276,7 @@ class Laberinto:
                             else:
                                 paredE = False
                                     
-                            if(listaParedes[5] == "True"):
+                            if(listaParedes[7] == "True"):
                                 paredO = True
                             else:
                                 paredO = False
@@ -300,5 +308,6 @@ class Laberinto:
     def obtenerMatriz(self):
         return self.matriz
     
-a = Laberinto(3,3)
-a.normalizarLaberinto()
+#a = Laberinto(5,5,"C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/uploads/laberintoPruebaMediaNoche.txt" )
+#a.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
+#a.normalizarLaberinto()
