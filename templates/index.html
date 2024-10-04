@@ -6,7 +6,7 @@
 
     <div class="configuracion-laberinto"> <!--Div para el spinbox de tamaños-->
         <label for="tamanoLaberinto">Tamaño del laberinto (nxn): </label>
-        <input type="number" id="tamanoLaberinto" name="tamanoLaberinto" value="10" min="10" max="30" step="1">
+        <input type="number" id="tamanoLaberinto" name="tamanoLaberinto" value="10" min="10" max="30" step="1" onkeydown="return false;">
     </div>
 
     <h2>Laberinto Generado</h2>
@@ -20,7 +20,6 @@
                     {% if not celda.caminos['s']['camino'] %}sin-pared-sur {% endif %}
                     {% if not celda.caminos['e']['camino'] %}sin-pared-este {% endif %}
                     {% if not celda.caminos['o']['camino'] %}sin-pared-oeste {% endif %}
-                    {% if celda.visitado %}solucion {% endif %}
                 "></td>
                 {% endfor %}
             </tr>
@@ -31,5 +30,14 @@
     <div class="botones-laberinto"> <!--Div para botones de funcionalidades-->
         <button id="btnGenerar">Generar Laberinto</button>
         <button id="btnResolver">Resolver Laberinto</button>
+
+        <form action="/guardarLaberinto" method="POST">
+            <button type="submit" id="btnGuardar">Guardar Laberinto</button>
+        </form>
+        <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+            <input type="file" name="file">
+            <button type="submit">Subir</button>
+        </form>
     </div>
+    
 {% endblock %}

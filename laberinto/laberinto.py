@@ -1,5 +1,6 @@
 import random
 import copy
+import os
 
 #De momento aquí para evitarme el errorsh
 class ElementoLaberinto:
@@ -23,7 +24,6 @@ class Laberinto:
             self.ancho = ancho
             self.altura = altura
             self.matriz = []
-            self.solucion = []
             self.direcciones = ['n', 's', 'e', 'o'] #norte, sur, este, oeste
             self.modificarDireccion = {
                 'n': {'fila': -1, 'columna': 0,'opuesto':'s'},
@@ -38,7 +38,6 @@ class Laberinto:
             self.ancho = 0
             self.altura = 0
             self.matriz = []
-            self.solucion = []
             self.direcciones = ['n', 's', 'e', 'o'] #norte, sur, este, oeste
             self.modificarDireccion = {
                 'n': {'fila': -1, 'columna': 0,'opuesto':'s'},
@@ -60,9 +59,9 @@ class Laberinto:
         elemento.valor = "0"
         self.matriz[self.altura-1][0] = elemento
 
-        print("Primera impresión")
-        self.imprimirLaberinto()
-        print("==============================")
+        #print("Primera impresión")
+        #self.imprimirLaberinto()
+        #print("==============================")
 
         return self.generarLaberinto()
     
@@ -70,8 +69,8 @@ class Laberinto:
         #Tiene que ser recursivo
         fila = self.altura - 1
         columna = 0
-        self.matriz[fila][columna].posicionAnteriorFila = fila
-        self.matriz[fila][columna].posicionAnteriorColumna = columna
+        #self.matriz[fila][columna].posicionAnteriorFila = fila
+        #self.matriz[fila][columna].posicionAnteriorColumna = columna  #No debería de ponerle al primero eso
 
         completado = False
         moverse = False
@@ -112,9 +111,9 @@ class Laberinto:
                         fila, columna =  siguienteFila, siguienteColumna
 
                         #Imprimo el laberinto para ver el progreso
-                        print("==============================")
-                        self.imprimirLaberinto()
-                        print("==============================")
+                        #print("==============================")
+                        #self.imprimirLaberinto()
+                        #print("==============================")
 
                         #Llamada recursiva a la función. Ahora la fila y la columnna actual son siguienteFila y siguienteColumna+
                         self.celdasVisitadas += 1
@@ -130,7 +129,8 @@ class Laberinto:
                 
                 completado = True
         print("Terminé el laberinto")
-
+        self.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
+        
     def imprimirLaberinto(self):
         for fila in self.matriz:
             print(" ".join(["P" if celda.visitado else "X" for celda in fila]))
@@ -138,20 +138,17 @@ class Laberinto:
     """
     Resolución del laberinto utilizando los valores de cada una de las celdas.
     Entradas: Coordenadas de inicio
-    Post-condición: Se almacena una solución adjunta al Laberinto
+    Post-condición: La matriz asociada será marcada con el camino.
     """
     def resolverLaberinto(self, filaActual, columnaActual):
         # Condición de parada de recursión, para saber si se ha llegado a la salida
-        if filaActual == (1 - 1) and columnaActual == self.ancho - 1:
-            self.matriz[filaActual][columnaActual].valor = 3  # La salida forma parte de la solución
-            self.solucion.append((filaActual, columnaActual))  # Almacenamos la salida en la solución
+        if self.matriz[filaActual][columnaActual] == 2:
+            self.matriz[filaActual][columnaActual].valor = 0  # Marcamos la salida en la solución.
             return True
 
-
-        # Se marca la celda como visitada (no sirve tanto) y se agrega a la solución.
+        # Se marca la celda como visitada (no sirve tanto) y con un numero que indique que por ese lado no puede irse.
         self.matriz[filaActual][columnaActual].visitado = True
-        self.matriz[filaActual][columnaActual].valor = 3  # Se marca como parte de la solución
-        self.solucion.append((filaActual, columnaActual))  # Se agrega a la solución actual
+        self.matriz[filaActual][columnaActual].valor = 0  # Marcamos el camino recorrido con un numero identificando un camino temporal de solución
 
         # Se probará cada direccion de la celda
         for direccion in self.direcciones:
@@ -162,26 +159,15 @@ class Laberinto:
             if (0 <= siguienteFila < self.altura and 0 <= siguienteColumna < self.ancho 
                 and self.matriz[filaActual][columnaActual].caminos[direccion]['camino'] 
                 and not self.matriz[siguienteFila][siguienteColumna].visitado):
-                print("Se puede seguir") # Mensaje de debug
+
                 # Backtracking usando la casilla siguiente
-                if self.resolverLaberinto(siguienteFila, siguienteColumna):
+                if self.resolver_laberinto(siguienteFila, siguienteColumna):
                     return True
 
         # En el caso de no haber posibilidad de moverse a alguna dirección entonces retrocedemos
-        self.matriz[filaActual][columnaActual].valor = 4  # Retroceso
-        self.solucion.pop()  # Eliminar la celda actual de la solución
+        self.matriz[filaActual][columnaActual].visitado = False
         return False
 
-    def reiniciarVisitados (self):
-        for i in range(self.altura):
-            for j in range(self.ancho):
-                self.matriz[i][j].visitado = False # Reiniciar como 
-                self.matriz[i][j].valor = 1
-
-    def mostrarSolucion(self):
-        print("Solución encontrada, paso a paso:")
-        for paso, (fila, columna) in enumerate(self.solucion):
-            print(f"Paso {paso + 1}: Coordenada (Fila {fila}, Columna {columna})")
 
     """
     Normalización de laberinto
@@ -215,10 +201,16 @@ class Laberinto:
             print(' '.join([str(celda.valor) for celda in fila]))
 
     def guardarEnArchivo(self, nombreArchivo):
+        #ruta_directorio = os.path.dirname(os.path.abspath(__file__))
+
+        # Ruta completa del archivo de texto
+        #ruta_archivo = os.path.join(ruta_directorio, nombreArchivo)
+
+
         #Abro el archivo en modo w para que borre el anterior en caso de existir y evitar problemas
         archivo = open(nombreArchivo, mode='w') #encoding="utf-8", 
         #Ahora tendría que iterar para escribir todo
-        lineaInicio = str(self.altura) + "," + str(self.ancho) + "\n"
+        lineaInicio = "Laberinto\n"+ str(self.altura) + "," + str(self.ancho) + "\n"
         archivo.write(lineaInicio)   #No olvidarme de escribir los saltos de línea
         
         for fila in range(self.altura):
@@ -255,7 +247,7 @@ class Laberinto:
                     if(primeraLinea):
                         #Estoy en la primera línea, verifico que el texto sea el correcto
                         if(linea.rstrip('\n') == "" or linea.rstrip('\n')  != "Laberinto"):
-                            return False #No es un archivo apto para leer
+                            return False #No es un archivo apto para leersh
                         primeraLinea = False
                     else:
                         #Después de la primera línea tengo que leer la cantidad de filas y columnas
@@ -265,7 +257,7 @@ class Laberinto:
                             self.matriz = [[ElementoLaberinto() for _ in range(self.ancho)] for _ in range(self.altura)]
                             lineaDimensiones = False
                         else:
-                            #Ya tocaría leer todas las demás líneas
+                            #Ya tocaría leersh todas las demás líneas
                         
                             listaParedes = linea.rstrip('\n').split(",")
                             #Tengo que poner los boleanos indicando las paredes
@@ -284,7 +276,7 @@ class Laberinto:
                             else:
                                 paredE = False
                                     
-                            if(listaParedes[5] == "True"):
+                            if(listaParedes[7] == "True"):
                                 paredO = True
                             else:
                                 paredO = False
@@ -302,7 +294,7 @@ class Laberinto:
 
 
         else:
-            return False #El archivo no tenía líneas para leer
+            return False #El archivo no tenía líneas para leersh
 
     def totalLineasArchivo(self, rutaArchivo):
         contador = 0
@@ -315,3 +307,7 @@ class Laberinto:
 
     def obtenerMatriz(self):
         return self.matriz
+    
+#a = Laberinto(5,5,"C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/uploads/laberintoPruebaMediaNoche.txt" )
+#a.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
+#a.normalizarLaberinto()
