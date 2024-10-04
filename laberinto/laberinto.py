@@ -23,6 +23,7 @@ class Laberinto:
             self.ancho = ancho
             self.altura = altura
             self.matriz = []
+            self.solucion = []
             self.direcciones = ['n', 's', 'e', 'o'] #norte, sur, este, oeste
             self.modificarDireccion = {
                 'n': {'fila': -1, 'columna': 0,'opuesto':'s'},
@@ -37,6 +38,7 @@ class Laberinto:
             self.ancho = 0
             self.altura = 0
             self.matriz = []
+            self.solucion = []
             self.direcciones = ['n', 's', 'e', 'o'] #norte, sur, este, oeste
             self.modificarDireccion = {
                 'n': {'fila': -1, 'columna': 0,'opuesto':'s'},
@@ -136,17 +138,20 @@ class Laberinto:
     """
     Resolución del laberinto utilizando los valores de cada una de las celdas.
     Entradas: Coordenadas de inicio
-    Post-condición: La matriz asociada será marcada con el camino.
+    Post-condición: Se almacena una solución adjunta al Laberinto
     """
     def resolverLaberinto(self, filaActual, columnaActual):
         # Condición de parada de recursión, para saber si se ha llegado a la salida
-        if self.matriz[filaActual][columnaActual] == 2:
-            self.matriz[filaActual][columnaActual].valor = 0  # Marcamos la salida en la solución.
+        if filaActual == self.altura - 1 and columnaActual == self.ancho - 1:
+            self.matriz[filaActual][columnaActual].valor = 3  # La salida forma parte de la solución
+            self.solucion.append((filaActual, columnaActual))  # Almacenamos la salida en la solución
             return True
 
-        # Se marca la celda como visitada (no sirve tanto) y con un numero que indique que por ese lado no puede irse.
+
+        # Se marca la celda como visitada (no sirve tanto) y se agrega a la solución.
         self.matriz[filaActual][columnaActual].visitado = True
-        self.matriz[filaActual][columnaActual].valor = 0  # Marcamos el camino recorrido con un numero identificando un camino temporal de solución
+        self.matriz[filaActual][columnaActual].valor = 3  # Se marca como parte de la solución
+        self.solucion.append((filaActual, columnaActual))  # Se agrega a la solución actual
 
         # Se probará cada direccion de la celda
         for direccion in self.direcciones:
@@ -157,14 +162,21 @@ class Laberinto:
             if (0 <= siguienteFila < self.altura and 0 <= siguienteColumna < self.ancho 
                 and self.matriz[filaActual][columnaActual].caminos[direccion]['camino'] 
                 and not self.matriz[siguienteFila][siguienteColumna].visitado):
-
+                print("Se puede seguir") # Mensaje de debug
                 # Backtracking usando la casilla siguiente
-                if self.resolver_laberinto(siguienteFila, siguienteColumna):
+                if self.resolverLaberinto(siguienteFila, siguienteColumna):
                     return True
 
+
         # En el caso de no haber posibilidad de moverse a alguna dirección entonces retrocedemos
-        self.matriz[filaActual][columnaActual].visitado = False
+        self.matriz[filaActual][columnaActual].valor = 4  # Retroceso
+        self.solucion.pop()  # Eliminar la celda actual de la solución
         return False
+
+    def mostrarSolucion(self):        
+        print("Solución encontrada, paso a paso:")
+        for paso, (fila, columna) in enumerate(self.solucion):
+            print(f"Paso {paso + 1}: Coordenada (Fila {fila}, Columna {columna})")
 
 
     """
@@ -300,5 +312,3 @@ class Laberinto:
     def obtenerMatriz(self):
         return self.matriz
     
-a = Laberinto(3,3)
-a.normalizarLaberinto()
