@@ -14,20 +14,20 @@ def index(laberinto = None):
     global matrizG
     if(laberinto is None):
         
-        lab = Laberinto(10, 10)  # Laberinto 10x10
+        lab = Laberinto(30, 30)  # Laberinto 10x10
         matrizG = lab
         #Ya no hace falta mandarlo a crear la matriz, él solito lo hace
         # Prueba para normalización
         matriz = lab.obtenerMatriz()  # Obtiene la matriz del laberinto
         print("Laberinto es none")
-        return render_template('index.html', matriz=matriz)  # Pasa la matriz al template
+        return render_template('index.html', matriz=matriz, tamanio=lab.altura)  # Pasa la matriz al template
         
     else:
         #Tendría que mandarle el laberinto cargado
         print("Laberinto no es none")       
         matrizG = laberinto
         matriz = laberinto.obtenerMatriz()
-        return render_template('index.html', matriz=matriz)  # Pasa la matriz al template
+        return render_template('index.html', matriz=matriz, tamanio=laberinto.altura)  # Pasa la matriz al template
         
     
     
@@ -70,7 +70,12 @@ def upload_file():
         return index(matrizLocal)
         #return f"File {file.filename} uploaded successfully!"
 
-
+@app.route('/generarLaberinto', methods=['POST'])
+def generarLaberinto():
+    tamano = request.form.get('tamanoLaberinto', type=int) #Con esto obtengo la selección del spinbox
+    matriz = Laberinto(tamano,tamano)
+    #Ahora tendría que cargarlo en la vista
+    return index(matriz)
 
 if __name__ == '__main__':
     app.run(debug=True)

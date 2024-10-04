@@ -3,13 +3,19 @@
 {% block content %}
     <h2>Bienvenido al proyecto del Laberinto</h2>
     <p>Esto es un proyecto para resolver laberintos utilizando backtracking.</p>
+    <form action="/generarLaberinto" method="POST">
+        <div class="configuracion-laberinto"> <!--Div para el spinbox de tamaños-->
+            <label for="tamanoLaberinto">Tamaño del laberinto (nxn): </label>
+            <div>
+                <input type="number" id="tamanoLaberinto" name="tamanoLaberinto" value="10" min="10" max="30" step="1" onkeydown="return false;">
+                <button id="btnGenerar">Generar Laberinto</button>
+            </div>
+            
+        </div>
+    </form>
+    
 
-    <div class="configuracion-laberinto"> <!--Div para el spinbox de tamaños-->
-        <label for="tamanoLaberinto">Tamaño del laberinto (nxn): </label>
-        <input type="number" id="tamanoLaberinto" name="tamanoLaberinto" value="10" min="10" max="30" step="1" onkeydown="return false;">
-    </div>
-
-    <h2>Laberinto Generado</h2>
+    <h2>Laberinto Generado: {{tamanio }} x {{tamanio }}</h2>
     <div class="laberinto"> <!--Div para el laberinto a mostrar, toma la matriz de parametro en app.py-->
         <table>
             {% for fila in matriz %}
@@ -28,13 +34,15 @@
     </div>
 
     <div class="botones-laberinto"> <!--Div para botones de funcionalidades-->
-        <button id="btnGenerar">Generar Laberinto</button>
+
+        
         <button id="btnResolver">Resolver Laberinto</button>
 
         <form action="/guardarLaberinto" method="POST">
             <button type="submit" id="btnGuardar">Guardar Laberinto</button>
         </form>
         <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+
             <input type="file" name="file">
             <button type="submit">Subir</button>
         </form>
