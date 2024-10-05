@@ -222,20 +222,23 @@ class Laberinto:
         heapq.heappush(cola_abierta, (0, (filaInicio, columnaInicio)))  # (costo total, coordenadas)
         
         # Diccionarios para costos y predecesores
-        g_costs = { (filaInicio, columnaInicio): 0 }
-        h_costs = { (filaInicio, columnaInicio): self.heuristica(filaInicio, columnaInicio) }
-        predecesor = { (filaInicio, columnaInicio): None }
+        g_costs = {(filaInicio, columnaInicio): 0}
+        h_costs = {(filaInicio, columnaInicio): self.heuristica(filaInicio, columnaInicio)}
+        predecesor = {(filaInicio, columnaInicio): None}
         
         while cola_abierta:
             # se saca el nodo de costo bajo
             costo_total, (filaActual, columnaActual) = heapq.heappop(cola_abierta)
 
-            # Condición de parada se llego al final
+            # Condición de parada: se llegó al final
             if filaActual == (1 - 1) and columnaActual == self.ancho - 1:
                 self.solucion = []
                 while (filaActual, columnaActual) is not None:
                     self.solucion.append((filaActual, columnaActual))
-                    filaActual, columnaActual = predecesor.get((filaActual, columnaActual), (None, None))
+                    siguiente = predecesor.get((filaActual, columnaActual), None)
+                    if siguiente is None:
+                        break  # Evitar que continúe si no hay un predecesor válido
+                    filaActual, columnaActual = siguiente
                 self.solucion.reverse()  # Invertir para que el camino esté en orden (FIFO)
                 return True
 
@@ -260,6 +263,7 @@ class Laberinto:
                         heapq.heappush(cola_abierta, (f_nuevo, (siguienteFila, siguienteColumna)))
 
         return False  # No hay solución
+
 
     def heuristica(self, fila, columna):
         return abs(fila - (self.altura - 1)) + abs(columna - (self.ancho - 1))
