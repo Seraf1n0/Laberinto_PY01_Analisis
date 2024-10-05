@@ -130,8 +130,6 @@ class Laberinto:
             if(self.celdasVisitadas == self.cantidadCeldas):
                 
                 completado = True
-        print("Terminé el laberinto")
-        self.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
         
     def imprimirLaberinto(self):
         for fila in self.matriz:
@@ -173,6 +171,48 @@ class Laberinto:
         self.matriz[filaActual][columnaActual].valor = 4  # Retroceso
         self.solucion.pop()  # Eliminar la celda actual de la solución
         return False
+
+    def resolverLaberintoBfs(self, filaInicio, columnaInicio):
+        # Una cola en la que insertamos las celdas actuales (posiciones del laberinto)
+        cola = deque([(filaInicio, columnaInicio)])  # Insertamos el punto inicial en la cola
+        self.matriz[filaInicio][columnaInicio].visitado = True
+        self.matriz[filaInicio][columnaInicio].valor = 3  # Marcar como parte de la solución
+        self.solucion = [(filaInicio, columnaInicio)]
+
+        # Diccionario para almacenar el predecesor de cada celda (para reconstruir el camino)
+        predecesor = {(filaInicio, columnaInicio): None}
+
+        while cola:
+            filaActual, columnaActual = cola.popleft()  # Extraer el nodo más reciente de la cola
+
+            # Condición de parada se ha llegado a la salida
+            if filaActual == (1 - 1) and columnaActual == self.ancho - 1:
+                self.matriz[filaActual][columnaActual].valor = 3  # Marcar la salida en la solución
+                # Reconstruir el camino a la solución
+                while (filaActual, columnaActual) is not None:
+                    self.solucion.append((filaActual, columnaActual))
+                    filaActual, columnaActual = predecesor[(filaActual, columnaActual)]
+                self.solucion.reverse()  # Invertir para que el camino esté en orden (FIFO)
+                return True
+
+            # ver las celdas adyacentes usando el diccionario de direcciones
+            for direccion in self.direcciones:
+                siguienteFila = filaActual + self.modificarDireccion[direccion]['fila']
+                siguienteColumna = columnaActual + self.modificarDireccion[direccion]['columna']
+
+                # Validar si podemos movernos en esa dirección y si no ha sido visitada
+                if (0 <= siguienteFila < self.altura and 0 <= siguienteColumna < self.ancho 
+                    and self.matriz[filaActual][columnaActual].caminos[direccion]['camino']
+                    and not self.matriz[siguienteFila][siguienteColumna].visitado):
+
+                    # Marcar la celda como visitada y añadirla a la cola
+                    self.matriz[siguienteFila][siguienteColumna].visitado = True
+                    self.matriz[siguienteFila][siguienteColumna].valor = 3  # Marcar como parte de la solución temporal
+                    predecesor[(siguienteFila, siguienteColumna)] = (filaActual, columnaActual)
+                    cola.append((siguienteFila, siguienteColumna))
+
+        return False  #No hay solucioncita
+
 
     def reiniciarVisitados (self):
         for i in range(self.altura):
@@ -293,6 +333,3 @@ class Laberinto:
     def obtenerMatriz(self):
         return self.matriz
     
-#a = Laberinto(5,5,"C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/uploads/laberintoPruebaMediaNoche.txt" )
-#a.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
-#a.normalizarLaberinto()
