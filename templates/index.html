@@ -50,10 +50,13 @@
             <tr>
                 {% for celda in fila %}
                 <td class="
-                    {% if not celda.caminos['n']['camino'] %}sin-pared-norte {% endif %}
-                    {% if not celda.caminos['s']['camino'] %}sin-pared-sur {% endif %}
-                    {% if not celda.caminos['e']['camino'] %}sin-pared-este {% endif %}
-                    {% if not celda.caminos['o']['camino'] %}sin-pared-oeste {% endif %}
+                {% if not celda.caminos['n']['camino'] %}sin-pared-norte {% endif %}
+                {% if not celda.caminos['s']['camino'] %}sin-pared-sur {% endif %}
+                {% if not celda.caminos['e']['camino'] %}sin-pared-este {% endif %}
+                {% if not celda.caminos['o']['camino'] %}sin-pared-oeste {% endif %}
+                {% if celda.valor == 3 %}solucion {% endif %}
+                {% if celda.valor == 2 %}fin {% endif %}
+                {% if celda.valor == 5 %}inicio {% endif %}
                 "></td>
                 {% endfor %}
             </tr>
@@ -63,9 +66,16 @@
 
     <div class="botones-laberinto"> <!--Div para botones de funcionalidades-->
 
-        
-        <button id="btnResolver">Resolver Laberinto</button>
-
+        <form id="resolver-form" action="/resolverLaberinto" method="POST">
+            <div>
+                <label for="algoritmo">Seleccionar algoritmo:</label>
+                <select id="algoritmo" name="algoritmo">
+                    <option value="backtracking">Backtracking</option>
+                    <option value="astar">A*</option>
+                </select>
+            </div>
+            <button id="btnResolver" type="submit">Resolver Laberinto</button>
+        </form>
         <form action="/guardarLaberinto" method="POST">
             <button type="submit" id="btnGuardar" >Guardar Laberinto</button>
         </form>
@@ -77,7 +87,5 @@
             <button type="submit" class="custom-file-upload">Subir Archivo</button>
         </form>
     </div>
-
     
-
 {% endblock %}

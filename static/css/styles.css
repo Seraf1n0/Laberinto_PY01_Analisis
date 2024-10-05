@@ -62,17 +62,17 @@ td {
 
 /* Solución */
 .solucion {
-    background-color: #00796b;
-    transition: all 300ms ease-in-out 1s;
+    background-color: rgb(38, 166, 115);
+    transition: background-color 0.5s;
 }
 
-/* Caminos */
-td:not(.sin-pared-norte):not(.sin-pared-sur):not(.sin-pared-este):not(.sin-pared-oeste) {
-    background-color: #e0f7fa; /* Color para los caminos */
+.inicio {
+    background-color: #2e2d2d;
+
 }
 
-td.sin-pared-norte, td.sin-pared-sur, td.sin-pared-este, td.sin-pared-oeste {
-    background-color: #ffffff; /* Color para las celdas con pared */
+.fin {
+    background-color: rgb(231, 65, 65);
 }
 
 /* hover (efecto pal cursor) */

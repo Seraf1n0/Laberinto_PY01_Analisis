@@ -1,6 +1,8 @@
 import random
 import copy
 import os
+from collections import deque
+import heapq
 
 #De momento aquí para evitarme el errorsh
 class ElementoLaberinto:
@@ -153,7 +155,7 @@ class Laberinto:
         
     def imprimirLaberinto(self):
         for fila in self.matriz:
-            print(" ".join(["P" if celda.visitado else "X" for celda in fila]))
+            print(" ".join(["P" if celda.valor == 3 else "X" for celda in fila]))
 
     """
     Resolución del laberinto utilizando los valores de cada una de las celdas.
@@ -192,53 +194,64 @@ class Laberinto:
         self.solucion.pop()  # Eliminar la celda actual de la solución
         return False
 
-    def resolverLaberintoBfs(self, filaInicio, columnaInicio):
-        # Una cola en la que insertamos las celdas actuales (posiciones del laberinto)
-        cola = deque([(filaInicio, columnaInicio)])  # Insertamos el punto inicial en la cola
-        self.matriz[filaInicio][columnaInicio].visitado = True
-        self.matriz[filaInicio][columnaInicio].valor = 3  # Marcar como parte de la solución
-        self.solucion = [(filaInicio, columnaInicio)]
+    def resolverLaberintoAStar(self, filaInicio, columnaInicio):
+        # Cola de prioridad para los nodos abiertos
+        cola_abierta = []
+        heapq.heappush(cola_abierta, (0, (filaInicio, columnaInicio)))  # (costo total, coordenadas)
+        
+        # Diccionarios para costos y predecesores
+        g_costs = { (filaInicio, columnaInicio): 0 }
+        h_costs = { (filaInicio, columnaInicio): self.heuristica(filaInicio, columnaInicio) }
+        predecesor = { (filaInicio, columnaInicio): None }
+        
+        while cola_abierta:
+            # se saca el nodo de costo bajo
+            costo_total, (filaActual, columnaActual) = heapq.heappop(cola_abierta)
 
-        # Diccionario para almacenar el predecesor de cada celda (para reconstruir el camino)
-        predecesor = {(filaInicio, columnaInicio): None}
-
-        while cola:
-            filaActual, columnaActual = cola.popleft()  # Extraer el nodo más reciente de la cola
-
-            # Condición de parada se ha llegado a la salida
+            # Condición de parada se llego al final
             if filaActual == (1 - 1) and columnaActual == self.ancho - 1:
-                self.matriz[filaActual][columnaActual].valor = 3  # Marcar la salida en la solución
-                # Reconstruir el camino a la solución
+                self.solucion = []
                 while (filaActual, columnaActual) is not None:
                     self.solucion.append((filaActual, columnaActual))
-                    filaActual, columnaActual = predecesor[(filaActual, columnaActual)]
+                    filaActual, columnaActual = predecesor.get((filaActual, columnaActual), (None, None))
                 self.solucion.reverse()  # Invertir para que el camino esté en orden (FIFO)
                 return True
 
-            # ver las celdas adyacentes usando el diccionario de direcciones
+            # Añadir a la lista de cerrados
             for direccion in self.direcciones:
                 siguienteFila = filaActual + self.modificarDireccion[direccion]['fila']
                 siguienteColumna = columnaActual + self.modificarDireccion[direccion]['columna']
 
-                # Validar si podemos movernos en esa dirección y si no ha sido visitada
+                # Validar si podemos movernos en esa dirección
                 if (0 <= siguienteFila < self.altura and 0 <= siguienteColumna < self.ancho 
-                    and self.matriz[filaActual][columnaActual].caminos[direccion]['camino']
-                    and not self.matriz[siguienteFila][siguienteColumna].visitado):
+                    and self.matriz[filaActual][columnaActual].caminos[direccion]['camino']):
+                    
+                    g_nuevo = g_costs[(filaActual, columnaActual)] + 1 
 
-                    # Marcar la celda como visitada y añadirla a la cola
-                    self.matriz[siguienteFila][siguienteColumna].visitado = True
-                    self.matriz[siguienteFila][siguienteColumna].valor = 3  # Marcar como parte de la solución temporal
-                    predecesor[(siguienteFila, siguienteColumna)] = (filaActual, columnaActual)
-                    cola.append((siguienteFila, siguienteColumna))
+                    if (siguienteFila, siguienteColumna) not in g_costs or g_nuevo < g_costs[(siguienteFila, siguienteColumna)]:
+                        g_costs[(siguienteFila, siguienteColumna)] = g_nuevo
+                        h_costs[(siguienteFila, siguienteColumna)] = self.heuristica(siguienteFila, siguienteColumna)
+                        f_nuevo = g_nuevo + h_costs[(siguienteFila, siguienteColumna)]
+                        predecesor[(siguienteFila, siguienteColumna)] = (filaActual, columnaActual)
 
-        return False  #No hay solucioncita
+                        # Añadir el nuevo nodo a la cola abierta si no está ya presente
+                        heapq.heappush(cola_abierta, (f_nuevo, (siguienteFila, siguienteColumna)))
+
+        return False  # No hay solución
+
+    def heuristica(self, fila, columna):
+        return abs(fila - (self.altura - 1)) + abs(columna - (self.ancho - 1))
 
 
-    def reiniciarVisitados (self):
+    def reiniciarVisitados(self):
         for i in range(self.altura):
             for j in range(self.ancho):
                 self.matriz[i][j].visitado = False # Reiniciar como 
                 self.matriz[i][j].valor = 1
+
+    def actualizarLaberinto(self, paso):
+        x, y = paso  # El paso es una coordenada (x, y) en la matriz dentro de la lista de solucion
+        self.matriz[x][y].valor = 3
 
     def mostrarSolucion(self):
         print("Solución encontrada, paso a paso:")

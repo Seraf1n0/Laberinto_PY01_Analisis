@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_file, request
+from flask import Flask, render_template, send_file, request, jsonify
 from laberinto.laberinto import Laberinto
 import os
 
@@ -30,17 +30,45 @@ def index(laberinto = None, mensajeDeError = None):
             #Tengo que mostrar el mensaje de error
             lab = Laberinto(10, 10)  # Laberinto 10x10
             matrizG = lab
-            matriz = lab.obtenerMatriz()  
+            matriz = lab.obtenerMatriz()
+            matrizG.matriz[matrizG.altura-1][0].valor = 5
+            matrizG.matriz[0][matrizG.ancho-1].valor = 2  
             return render_template('index.html', matriz=matriz, tamanio=lab.altura, mensajeError = True)  # Pasa la matriz al template
         else:  
             #Tendría que imprimir el mensaje de errorsS
             print("Mensaje de error none")
             matrizG = laberinto
             matriz = laberinto.obtenerMatriz()
+            matrizG.matriz[matrizG.altura-1][0].valor = 5
+            matrizG.matriz[0][matrizG.ancho-1].valor = 2
             return render_template('index.html', matriz=matriz, tamanio=laberinto.altura, mensajeError = False)  # Pasa la matriz al template
         
     
+@app.route('/resolverLaberinto', methods=['POST'])
+def resolverLaberinto():
+    global matrizG
+    algoritmo = request.form.get('algoritmo')
+
+    matrizG.reiniciarVisitados()# Reiniciar valores para resolver el laberinto
+
+    if algoritmo == "backtracking":
+        matrizG.resolverLaberinto(matrizG.altura - 1, 0)
+    else:
+        matrizG.resolverLaberintoAStar(matrizG.altura - 1, 0)
+
+    pasos = matrizG.solucion
+
+    matrizG.reiniciarVisitados()
+
+    for paso in pasos:
+        matrizG.actualizarLaberinto(paso)  # Cambiará los valores de las celdas correspondientes a 3
     
+    # Marcamos la casilla de inicio y final:
+    matrizG.matriz[matrizG.altura-1][0].valor = 5
+    matrizG.matriz[0][matrizG.ancho-1].valor = 2
+
+    return index(matrizG)
+
 
 @app.route('/guardarLaberinto', methods=['POST'])
 def guardarLaberinto():
