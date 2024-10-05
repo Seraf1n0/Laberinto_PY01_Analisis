@@ -10,35 +10,61 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 matrizG = None
 
 @app.route('/')
-def index(laberinto = None):
+def index(laberinto = None, mensajeDeError = None):
     global matrizG
     if(laberinto is None):
         
-        lab = Laberinto(30, 30)  # Laberinto 10x10
+        lab = Laberinto(10, 10)  # Laberinto 10x10
         matrizG = lab
         #Ya no hace falta mandarlo a crear la matriz, él solito lo hace
         # Prueba para normalización
         matriz = lab.obtenerMatriz()  # Obtiene la matriz del laberinto
         print("Laberinto es none")
-        return render_template('index.html', matriz=matriz, tamanio=lab.altura)  # Pasa la matriz al template
+        return render_template('index.html', matriz=matriz, tamanio=lab.altura, mensajeError = False)  # Pasa la matriz al template
         
     else:
         #Tendría que mandarle el laberinto cargado
-        print("Laberinto no es none")       
-        matrizG = laberinto
-        matriz = laberinto.obtenerMatriz()
-        return render_template('index.html', matriz=matriz, tamanio=laberinto.altura)  # Pasa la matriz al template
+        print("Laberinto no es none")
+        if(mensajeDeError is not None):
+            print("Mensaje de error no es none")
+            #Tengo que mostrar el mensaje de error
+            lab = Laberinto(10, 10)  # Laberinto 10x10
+            matrizG = lab
+            matriz = lab.obtenerMatriz()  
+            return render_template('index.html', matriz=matriz, tamanio=lab.altura, mensajeError = True)  # Pasa la matriz al template
+        else:  
+            #Tendría que imprimir el mensaje de errorsS
+            print("Mensaje de error none")
+            matrizG = laberinto
+            matriz = laberinto.obtenerMatriz()
+            return render_template('index.html', matriz=matriz, tamanio=laberinto.altura, mensajeError = False)  # Pasa la matriz al template
         
     
     
 
 @app.route('/guardarLaberinto', methods=['POST'])
 def guardarLaberinto():
-    print("Llegué a guardarsh")
+    
     global matrizG
-    matrizG.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
-    print("Guardé la matriz")
-    return send_file("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt", as_attachment=True)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Crear la ruta completa para la carpeta 'preparando'
+    save_dir = os.path.join(base_dir, 'preparando')
+    
+    # Crear la carpeta 'preparando' si no existe
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    
+    # Ruta completa del archivo donde se guardará el laberinto
+    file_path = os.path.join(save_dir, 'laberinto.txt')
+    file_path = file_path.replace("\\", "/")
+    # Guardar la matriz en el archivo
+    matrizG.guardarEnArchivo(file_path)
+    
+    print("Guardé la matriz en:", file_path)
+    
+    # Enviar el archivo como una descarga
+    return send_file(file_path, as_attachment=True)
     
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -48,27 +74,38 @@ def upload_file():
     
     file = request.files['file']
     
+    
+
     if file.filename == '':
-        return "No file selected"
+        return index(1, True)
     
     # Eliminar todos los archivos existentes en la carpeta
     for filename in os.listdir(app.config['UPLOAD_FOLDER']):
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        print("Removiendo: " + str(file_path))
         try:
             if os.path.isfile(file_path):
                 os.remove(file_path)
         except Exception as e:
             return f"Error deleting file {filename}: {e}"
 
+    
     # Guardar el nuevo archivo
     if file:
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(filepath)    
+        file.save(filepath)
+        print("Insertando: " + str(filepath))
+        print(filepath)
+        filepath = str(filepath)
+        filepath = filepath.replace("\\", "/")
+        print(filepath)
         #Filepath tiene la ruta que ocupo para cargarlo
-        matrizLocal = Laberinto(1,1, str(filepath))
-        
-        return index(matrizLocal)
-        #return f"File {file.filename} uploaded successfully!"
+        matrizLocal = Laberinto(10,10, filepath)
+        if(matrizLocal.laberintoCargado):
+            return index(matrizLocal)
+        else:
+            #Hago el return pero con el parámetro para que me muestre el mensaje de error
+            return index(matrizLocal, True)
 
 @app.route('/generarLaberinto', methods=['POST'])
 def generarLaberinto():
