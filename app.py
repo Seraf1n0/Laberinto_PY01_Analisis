@@ -59,9 +59,9 @@ def resolverLaberinto(fila = None, columna = None):
     if(fila is not None and columna is not None):
         print(str(fila) + ", " + str(columna))
         if algoritmo == "backtracking":
-            matrizG.resolverLaberinto(matrizG.altura - 1, 0 )
+            matrizG.resolverLaberinto(fila, columna )
         else:
-            matrizG.resolverLaberintoAStar(matrizG.altura - 1, 0)
+            matrizG.resolverLaberintoAStar(fila, columna)
 
         pasos = matrizG.solucion
 
