@@ -2,13 +2,24 @@ from flask import Flask, render_template, send_file, request
 from laberinto.laberinto import Laberinto
 import os
 
+
 app = Flask(__name__)
+"""
+Esto es para crear y guardar el directorio donde se almacenan los archivos que carga el usuario con el mapa
+"""
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+#Variable global que puede servir
 matrizG = None
 
+"""
+Función principal para ejecutar la interfaz.
+Tiene dos parámetros que pueden ser none, en caso de ser indicados es para alterar la interfaz
+El parámetro laberinto se utiliza para que no genere uno nuevo, sino que ponga en la interfaz el que le mando
+El parámetro mensajeDeError se usa cuando intento cargar un archivo como laberinto pero no cumple las condiciones necesarias para ser leído por el programa
+"""
 @app.route('/')
 def index(laberinto = None, mensajeDeError = None):
     global matrizG
@@ -19,22 +30,18 @@ def index(laberinto = None, mensajeDeError = None):
         #Ya no hace falta mandarlo a crear la matriz, él solito lo hace
         # Prueba para normalización
         matriz = lab.obtenerMatriz()  # Obtiene la matriz del laberinto
-        print("Laberinto es none")
         return render_template('index.html', matriz=matriz, tamanio=lab.altura, mensajeError = False)  # Pasa la matriz al template
         
     else:
         #Tendría que mandarle el laberinto cargado
-        print("Laberinto no es none")
         if(mensajeDeError is not None):
-            print("Mensaje de error no es none")
             #Tengo que mostrar el mensaje de error
             lab = Laberinto(10, 10)  # Laberinto 10x10
             matrizG = lab
             matriz = lab.obtenerMatriz()  
             return render_template('index.html', matriz=matriz, tamanio=lab.altura, mensajeError = True)  # Pasa la matriz al template
         else:  
-            #Tendría que imprimir el mensaje de errorsS
-            print("Mensaje de error none")
+            #Tendría que imprimir el mensaje de errors
             matrizG = laberinto
             matriz = laberinto.obtenerMatriz()
             return render_template('index.html', matriz=matriz, tamanio=laberinto.altura, mensajeError = False)  # Pasa la matriz al template
