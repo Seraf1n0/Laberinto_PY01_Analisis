@@ -255,8 +255,6 @@ class Laberinto:
     def heuristica(self, fila, columna):
         return abs(fila - (self.altura - 1)) + abs(columna - (self.ancho - 1))
 
-
-    def reiniciarVisitados(self):
     """
     Este método será para reiniciar el booleano que indica si la casilla se ha visitado anteriormente.
     El algoritmo para generar el laberinto deja a todas las casillas como visitadas, entonces este método reinicia este valor
