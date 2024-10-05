@@ -2,13 +2,24 @@ from flask import Flask, render_template, send_file, request, jsonify
 from laberinto.laberinto import Laberinto
 import os
 
+
 app = Flask(__name__)
+"""
+Esto es para crear y guardar el directorio donde se almacenan los archivos que carga el usuario con el mapa
+"""
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+#Variable global que puede servir
 matrizG = None
 
+"""
+Función principal para ejecutar la interfaz.
+Tiene dos parámetros que pueden ser none, en caso de ser indicados es para alterar la interfaz
+El parámetro laberinto se utiliza para que no genere uno nuevo, sino que ponga en la interfaz el que le mando
+El parámetro mensajeDeError se usa cuando intento cargar un archivo como laberinto pero no cumple las condiciones necesarias para ser leído por el programa
+"""
 @app.route('/')
 def index(laberinto = None, mensajeDeError = None):
     global matrizG
@@ -19,24 +30,19 @@ def index(laberinto = None, mensajeDeError = None):
         #Ya no hace falta mandarlo a crear la matriz, él solito lo hace
         # Prueba para normalización
         matriz = lab.obtenerMatriz()  # Obtiene la matriz del laberinto
-        print("Laberinto es none")
         return render_template('index.html', matriz=matriz, tamanio=lab.altura, mensajeError = False)  # Pasa la matriz al template
         
     else:
-        #Tendría que mandarle el laberinto cargado
-        print("Laberinto no es none")
         if(mensajeDeError is not None):
-            print("Mensaje de error no es none")
             #Tengo que mostrar el mensaje de error
-            lab = Laberinto(10, 10)  # Laberinto 10x10
+            lab = Laberinto(10, 10)  # Laberinto 10x10 predeterminado
             matrizG = lab
             matriz = lab.obtenerMatriz()
             matrizG.matriz[matrizG.altura-1][0].valor = 5
             matrizG.matriz[0][matrizG.ancho-1].valor = 2  
             return render_template('index.html', matriz=matriz, tamanio=lab.altura, mensajeError = True)  # Pasa la matriz al template
         else:  
-            #Tendría que imprimir el mensaje de errorsS
-            print("Mensaje de error none")
+            #Tendría que imprimir el mensaje de errors
             matrizG = laberinto
             matriz = laberinto.obtenerMatriz()
             matrizG.matriz[matrizG.altura-1][0].valor = 5
@@ -63,6 +69,7 @@ def resolverLaberinto():
     for paso in pasos:
         matrizG.actualizarLaberinto(paso)  # Cambiará los valores de las celdas correspondientes a 3
     
+<<<<<<< HEAD
     # Marcamos la casilla de inicio y final:
     matrizG.matriz[matrizG.altura-1][0].valor = 5
     matrizG.matriz[0][matrizG.ancho-1].valor = 2
@@ -70,42 +77,46 @@ def resolverLaberinto():
     return index(matrizG)
 
 
+=======
+"""
+Esta función se ejecuta cuando se presiona el botón Guadar Laberinto en la interfaz.
+Toma la matriz y ejecuta el método que permite guardar el laberinto.
+El archivo lo pone en la carpeta preparando que se encuentra en el directorio del proyecto. Antes de guardarlo borra todos los anteriores para que solo quede el últio generado.
+Luego el archivo se descarga en la interfaz.
+"""
+>>>>>>> 578761645fe963fe47533186aa4e47f08e9af331
 @app.route('/guardarLaberinto', methods=['POST'])
 def guardarLaberinto():
     
     global matrizG
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Crear la ruta completa para la carpeta 'preparando'
+       
     save_dir = os.path.join(base_dir, 'preparando')
     
-    # Crear la carpeta 'preparando' si no existe
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     
-    # Ruta completa del archivo donde se guardará el laberinto
     file_path = os.path.join(save_dir, 'laberinto.txt')
     file_path = file_path.replace("\\", "/")
-    # Guardar la matriz en el archivo
+
     matrizG.guardarEnArchivo(file_path)
-    
-    print("Guardé la matriz en:", file_path)
-    
-    # Enviar el archivo como una descarga
     return send_file(file_path, as_attachment=True)
-    
+
+
+"""
+Esta función se ejecuta cuando se presiona el botón Subir. Previamente debe haberse seleccionado el archivo a cargar.
+Se eliminan todos los archivos que se encuentren en la carpeta uploads y luego se agrega el nuevo archivo generado por el método en la clase Laberinto
+"""
 @app.route('/upload', methods=['POST'])
 def upload_file():
  
     if 'file' not in request.files:
-        return "No file part in the request"
+        return "El archivo no se encuentra entre los solicitados"
     
     file = request.files['file']
-    
-    
 
     if file.filename == '':
-        return index(1, True)
+        return index(1, True) #Por si no ha seleccionado aún
     
     # Eliminar todos los archivos existentes en la carpeta
     for filename in os.listdir(app.config['UPLOAD_FOLDER']):
@@ -115,7 +126,7 @@ def upload_file():
             if os.path.isfile(file_path):
                 os.remove(file_path)
         except Exception as e:
-            return f"Error deleting file {filename}: {e}"
+            return f"Error borrando archivo {filename}: {e}"
 
     
     # Guardar el nuevo archivo
@@ -135,6 +146,12 @@ def upload_file():
             #Hago el return pero con el parámetro para que me muestre el mensaje de error
             return index(matrizLocal, True)
 
+
+"""
+Esta función se ejecuta al momento de presionar el botón de Generar Laberinto en la interfaz.
+Se toma el valor que se encuentra en el spinbox con el tamaño del laberinto y se crea este.
+Luego se envía a la interfaz para que se cargue
+"""
 @app.route('/generarLaberinto', methods=['POST'])
 def generarLaberinto():
     tamano = request.form.get('tamanoLaberinto', type=int) #Con esto obtengo la selección del spinbox
