@@ -46,8 +46,11 @@
     <h2>Laberinto Generado: {{tamanio }} x {{tamanio }}</h2>
     <div class="laberinto"> <!--Div para el laberinto a mostrar, toma la matriz de parametro en app.py-->
         <table>
+            {% set numeroFila = 0 %}
             {% for fila in matriz %}
+            
             <tr>
+                {% set numeroColumna = 0 %}
                 {% for celda in fila %}
                 <td class="
                 {% if not celda.caminos['n']['camino'] %}sin-pared-norte {% endif %}
@@ -57,9 +60,11 @@
                 {% if celda.valor == 3 %}solucion {% endif %}
                 {% if celda.valor == 2 %}fin {% endif %}
                 {% if celda.valor == 5 %}inicio {% endif %}
-                "></td>
+                " onclick="celdaPresionada({{celda.filaCelda }}, {{celda.columnaCelda}})"></td>
+                {% set numeroColumna = numeroColumna +1 %}
                 {% endfor %}
             </tr>
+            {% set numeroFila = numeroFila +1 %}
             {% endfor %}
         </table>
     </div>
@@ -88,4 +93,22 @@
         </form>
     </div>
     
+    <script>
+        function celdaPresionada(i, j) {
+            fetch('/procesar-celda', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ fila: i, columna: j }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Respuesta del servidor:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
 {% endblock %}

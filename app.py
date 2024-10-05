@@ -51,30 +51,49 @@ def index(laberinto = None, mensajeDeError = None):
         
     
 @app.route('/resolverLaberinto', methods=['POST'])
-def resolverLaberinto():
+def resolverLaberinto(fila = None, columna = None):
     global matrizG
     algoritmo = request.form.get('algoritmo')
-
+    print("Matriz resolver: " + str(matrizG))
     matrizG.reiniciarVisitados()# Reiniciar valores para resolver el laberinto
+    if(fila is not None and columna is not None):
+        print(str(fila) + ", " + str(columna))
+        if algoritmo == "backtracking":
+            matrizG.resolverLaberinto(matrizG.altura - 1, 0 )
+        else:
+            matrizG.resolverLaberintoAStar(matrizG.altura - 1, 0)
 
-    if algoritmo == "backtracking":
-        matrizG.resolverLaberinto(matrizG.altura - 1, 0)
+        pasos = matrizG.solucion
+
+        matrizG.reiniciarVisitados()
+
+        for paso in pasos:
+            matrizG.actualizarLaberinto(paso)  # Cambiará los valores de las celdas correspondientes a 3
+        
+        # Marcamos la casilla de inicio y final:
+        matrizG.matriz[matrizG.altura-1][0].valor = 5
+        matrizG.matriz[0][matrizG.ancho-1].valor = 2
+
+        return index(matrizG)
     else:
-        matrizG.resolverLaberintoAStar(matrizG.altura - 1, 0)
+        #Se indica la fila y columna de donde comienza
+        if algoritmo == "backtracking":
+            matrizG.resolverLaberinto(matrizG.altura - 1, 0)
+        else:
+            matrizG.resolverLaberintoAStar(matrizG.altura - 1,0)
 
-    pasos = matrizG.solucion
+        pasos = matrizG.solucion
 
-    matrizG.reiniciarVisitados()
+        matrizG.reiniciarVisitados()
 
-    for paso in pasos:
-        matrizG.actualizarLaberinto(paso)  # Cambiará los valores de las celdas correspondientes a 3
-    
-    # Marcamos la casilla de inicio y final:
-    matrizG.matriz[matrizG.altura-1][0].valor = 5
-    matrizG.matriz[0][matrizG.ancho-1].valor = 2
+        for paso in pasos:
+            matrizG.actualizarLaberinto(paso)  # Cambiará los valores de las celdas correspondientes a 3
+        
+        # Marcamos la casilla de inicio y final:
+        matrizG.matriz[matrizG.altura-1][0].valor = 5
+        matrizG.matriz[0][matrizG.ancho-1].valor = 2
 
-    return index(matrizG)
-
+        return index(matrizG)
 
 """
 Esta función se ejecuta cuando se presiona el botón Guadar Laberinto en la interfaz.
@@ -155,6 +174,20 @@ def generarLaberinto():
     matriz = Laberinto(tamano,tamano)
     #Ahora tendría que cargarlo en la vista
     return index(matriz)
+
+
+@app.route('/procesar-celda', methods=['POST'])
+def procesar_celda():
+    global matrizG
+    print(str(matrizG))
+    datos = request.get_json()
+    fila = datos['fila']
+    columna = datos['columna']
+    print("Fila: " + str(fila) + " Columna: " + str(columna))
+
+    #Aquí tendría entonces que poner la solución
+    return resolverLaberinto(int(fila), int(columna))
+    #return jsonify({"status": "success", "fila": fila, "columna": columna})
 
 if __name__ == '__main__':
     app.run(debug=True)

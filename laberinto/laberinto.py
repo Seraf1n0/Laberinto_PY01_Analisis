@@ -16,7 +16,9 @@ class ElementoLaberinto:
         self.valor = 1
         self.visitado = False
         self.posicionAnteriorFila = None 
-        self.posicionAnteriorColumna = None 
+        self.posicionAnteriorColumna = None
+        self.filaCelda = 2
+        self.columnaCelda = 2 
         #Con esto es que indico en cuales direcciones hay paredes y cuales caminos
         self.caminos = {
             'n':{'camino':False},
@@ -80,6 +82,13 @@ class Laberinto:
         #Primero genero una matriz con 1's indicando las paredes
         self.matriz = [[ElementoLaberinto() for _ in range(self.ancho)] for _ in range(self.altura)] #Aquí creo listas independientes y no referencian a una misma
         
+        #Ahora tengo que asignar el valor de la fila y columna
+        for i in range(self.altura):
+            for j in range(self.ancho):
+                self.matriz[i][j].filaCelda = i
+                self.matriz[i][j].columnaCelda = j
+
+        #Para asignar los índices
         elemento = self.matriz[self.altura-1][0]
         elemento.valor = "0"
         self.matriz[self.altura-1][0] = elemento
@@ -348,6 +357,13 @@ class Laberinto:
                                 listaDimensiones = linea.rstrip('\n').split(",")
                                 self.altura, self.ancho = int(listaDimensiones[0]), int(listaDimensiones[1]) #Filas, columnas
                                 self.matriz = [[ElementoLaberinto() for _ in range(self.ancho)] for _ in range(self.altura)]
+
+                                #Ahora tengo que asignar el valor de la fila y columna
+                                for i in range(self.altura):
+                                    for j in range(self.ancho):
+                                        self.matriz[i][j].filaCelda = i
+                                        self.matriz[i][j].columnaCelda = j
+
                                 lineaDimensiones = False
                             else:
                                 #Ya tocaría leer todas las demás líneas
