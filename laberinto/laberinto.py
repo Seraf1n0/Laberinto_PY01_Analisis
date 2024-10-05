@@ -207,7 +207,6 @@ class Laberinto:
         self.solucion.pop()  # Eliminar la celda actual de la solución
         return False
 
-<<<<<<< HEAD
     def resolverLaberintoAStar(self, filaInicio, columnaInicio):
         # Cola de prioridad para los nodos abiertos
         cola_abierta = []
@@ -258,7 +257,6 @@ class Laberinto:
 
 
     def reiniciarVisitados(self):
-=======
     """
     Este método será para reiniciar el booleano que indica si la casilla se ha visitado anteriormente.
     El algoritmo para generar el laberinto deja a todas las casillas como visitadas, entonces este método reinicia este valor
@@ -267,18 +265,15 @@ class Laberinto:
     Post-condición: Ahora el valor del atributo visitado en cada elemento de la matriz es False
     """
     def reiniciarVisitados (self):
->>>>>>> 578761645fe963fe47533186aa4e47f08e9af331
         for i in range(self.altura):
             for j in range(self.ancho):
                 self.matriz[i][j].visitado = False # Reiniciar como 
                 self.matriz[i][j].valor = 1
 
-<<<<<<< HEAD
     def actualizarLaberinto(self, paso):
         x, y = paso  # El paso es una coordenada (x, y) en la matriz dentro de la lista de solucion
         self.matriz[x][y].valor = 3
 
-=======
     """
     Este método imprime la solución que se encuentra para el laberinto
     Pre-condiciones: Se debe de haber ejecutado el método generarMatriz previamente porque sino esta se encontrará vacía
@@ -286,7 +281,6 @@ class Laberinto:
     Entrada: Ninguna
     Salida: Se imprime el dato en la consola
     """
->>>>>>> 578761645fe963fe47533186aa4e47f08e9af331
     def mostrarSolucion(self):
         print("Solución encontrada, paso a paso:")
         for paso, (fila, columna) in enumerate(self.solucion):
@@ -419,9 +413,5 @@ class Laberinto:
     Salida: Se retorna el atributo matriz de esta clase
     """
     def obtenerMatriz(self):
-<<<<<<< HEAD
         return self.matriz
     
-=======
-        return self.matriz
->>>>>>> 578761645fe963fe47533186aa4e47f08e9af331

@@ -69,7 +69,6 @@ def resolverLaberinto():
     for paso in pasos:
         matrizG.actualizarLaberinto(paso)  # Cambiará los valores de las celdas correspondientes a 3
     
-<<<<<<< HEAD
     # Marcamos la casilla de inicio y final:
     matrizG.matriz[matrizG.altura-1][0].valor = 5
     matrizG.matriz[0][matrizG.ancho-1].valor = 2
@@ -77,14 +76,12 @@ def resolverLaberinto():
     return index(matrizG)
 
 
-=======
 """
 Esta función se ejecuta cuando se presiona el botón Guadar Laberinto en la interfaz.
 Toma la matriz y ejecuta el método que permite guardar el laberinto.
 El archivo lo pone en la carpeta preparando que se encuentra en el directorio del proyecto. Antes de guardarlo borra todos los anteriores para que solo quede el últio generado.
 Luego el archivo se descarga en la interfaz.
 """
->>>>>>> 578761645fe963fe47533186aa4e47f08e9af331
 @app.route('/guardarLaberinto', methods=['POST'])
 def guardarLaberinto():
     
