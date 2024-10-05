@@ -2,7 +2,13 @@ import random
 import copy
 import os
 
-#De momento aquí para evitarme el errorsh
+"""
+Nombre de la clase: ElementoLaberinto
+Cantidad de métodos: 1 (Constructor unicamente)
+Función: Este será el objeto que se aloje en cada posición de la matriz que contenga el laberinto.
+Contiene un diccionario con los puntos cardinales (norte, sur, este, oeste) y un valor booleano para indicar si en esa dirección hay pared o camino.
+Además guarda el valor de la casilla en la que se estaba anteriormente antes de llegar a esta y si ya se había visitado previamente.
+"""
 class ElementoLaberinto:
     def __init__(self):
         self.valor = 1
@@ -16,7 +22,13 @@ class ElementoLaberinto:
             'e':{'camino':False},
             'o':{'camino':False}
         }
-
+"""
+Nombre de la clase: Laberinto
+Cantidad de métodos: 11
+Función: Generar el laberinto de forma aleatoria con el tamaño indicado.
+         Guardarlo en un archivo y cargarlo.
+         Resolverlo utilizando el método que se indique.
+"""
 class Laberinto:
     def __init__(self, altura, ancho, rutaArchivo=None) :
         #Poniendo atributos de instancia
@@ -57,7 +69,11 @@ class Laberinto:
                 #No se cargó el laberinto
                 self.laberintoCargado = False
 
-
+    """
+    Se genera una matriz del tamaño indicado en el constructor. Cada posición contiene un objeto del tipo ElementoLaberinto
+    Entradas: ninguna
+    Post-condición: Ahora la matriz contendrá los elementos necesarios para poder generar el laberinto aleatorio
+    """
     def generarMatriz(self):
         #Primero genero una matriz con 1's indicando las paredes
         self.matriz = [[ElementoLaberinto() for _ in range(self.ancho)] for _ in range(self.altura)] #Aquí creo listas independientes y no referencian a una misma
@@ -66,19 +82,21 @@ class Laberinto:
         elemento.valor = "0"
         self.matriz[self.altura-1][0] = elemento
 
-        #print("Primera impresión")
-        #self.imprimirLaberinto()
-        #print("==============================")
-
         return self.generarLaberinto()
     
+    """
+    Se genera el laberinto de forma aleatoria por medio de un algoritmo de backtraking que recorre todas las casillas y derriba
+    los muros entre en la posición que se encuentre y la siguiente a la que quiera moverse en una dirección elegida de forma aleatoria. Esto es lo que permite
+    que siempre se genere un laberinto diferente al anterior.
+    Pre-condiciones: Se debe de haber ejecutado el método generarMatriz previamente para que esta ya se encuentre llena con el objeto ElementoLaberinto
+    Entradas: Ninguna
+    Post-condición: El laberinto ya se encontrará generado y listo para utilizarse
+    """
     def generarLaberinto(self):
         #Tiene que ser recursivo
         fila = self.altura - 1
         columna = 0
-        #self.matriz[fila][columna].posicionAnteriorFila = fila
-        #self.matriz[fila][columna].posicionAnteriorColumna = columna  #No debería de ponerle al primero eso
-        self.matriz[self.altura-1][0].posicionAnteriorColumna = 1
+        self.matriz[self.altura-1][0].posicionAnteriorColumna = 1 #Para que el anterior de la primera casilla no sea None
         self.matriz[self.altura-1][0].posicionAnteriorFila = 0
         completado = False
         moverse = False
@@ -124,12 +142,6 @@ class Laberinto:
                         #Modifico la fila actual para que sea a la que me moví
                         fila, columna =  siguienteFila, siguienteColumna
 
-                        #Imprimo el laberinto para ver el progreso
-                        #print("==============================")
-                        #self.imprimirLaberinto()
-                        #print("==============================")
-
-                        #Llamada recursiva a la función. Ahora la fila y la columnna actual son siguienteFila y siguienteColumna+
                         self.celdasVisitadas += 1
                         moverse = True
                         break
@@ -140,17 +152,18 @@ class Laberinto:
                     fila = self.matriz[fila][columna].posicionAnteriorFila #Pongo la fila anterior
                     columna = self.matriz[fila][columna].posicionAnteriorColumna  #Pongo la columna anterior 
                 else:
-                    #Para no complicarme en este caso genero otro laberinto y ya
-                    print("Es none los indices anteriores")
                     self.celdasVisitadas = 1
                     self.matriz = []
                     return self.generarMatriz()
                     
             if(self.celdasVisitadas == self.cantidadCeldas):
-                
                 completado = True
        
-        
+    """
+    Método que imprime el laberinto en consola. De uso para el desarrollo
+    Entradas: Ninguna
+    Post-condición: Se muestra el laberinto en la consola
+    """
     def imprimirLaberinto(self):
         for fila in self.matriz:
             print(" ".join(["P" if celda.visitado else "X" for celda in fila]))
@@ -192,23 +205,40 @@ class Laberinto:
         self.solucion.pop()  # Eliminar la celda actual de la solución
         return False
 
+    """
+    Este método será para reiniciar el booleano que indica si la casilla se ha visitado anteriormente.
+    El algoritmo para generar el laberinto deja a todas las casillas como visitadas, entonces este método reinicia este valor
+    para que este atributo se pueda utilizar en los algoritmos para resolver el laberinto.
+    Pre-condición: Se debe de haber ejecutado el método generarMatriz previamente porque sino esta se encontrará vacía
+    Post-condición: Ahora el valor del atributo visitado en cada elemento de la matriz es False
+    """
     def reiniciarVisitados (self):
         for i in range(self.altura):
             for j in range(self.ancho):
                 self.matriz[i][j].visitado = False # Reiniciar como 
                 self.matriz[i][j].valor = 1
 
+    """
+    Este método imprime la solución que se encuentra para el laberinto
+    Pre-condiciones: Se debe de haber ejecutado el método generarMatriz previamente porque sino esta se encontrará vacía
+                     Se debe de haber ejecutado el método resolverLaberinto previamente para que la lista con la solución no se encuentre vacía
+    Entrada: Ninguna
+    Salida: Se imprime el dato en la consola
+    """
     def mostrarSolucion(self):
         print("Solución encontrada, paso a paso:")
         for paso, (fila, columna) in enumerate(self.solucion):
             print(f"Paso {paso + 1}: Coordenada (Fila {fila}, Columna {columna})")
 
+    """
+    Este método permite guardar en un archivo .txt el laberinto generado.
+    Escribe una validación para utilizar al momento de cargar el laberinto en la primera línea, luego la cantidad de 
+    filas y columnas. Finalmente escribe el diccionario con las direcciones de la casilla en las cuales tiene pared o camino
+    Entrada: nombreArchivo. Es el que se le designará al resultado de ejeuctar la función.
+    Pre-condición: Se debe de haber ejecutado el método generarMatriz previamente porque sino esta se encontrará vacía
+    Post-condición: Se genera un archivo con el laberinto que puede ser utilizado en el método leerLaberintoDeArchivo
+    """
     def guardarEnArchivo(self, nombreArchivo):
-        #ruta_directorio = os.path.dirname(os.path.abspath(__file__))
-
-        # Ruta completa del archivo de texto
-        #ruta_archivo = os.path.join(ruta_directorio, nombreArchivo)
-
 
         #Abro el archivo en modo w para que borre el anterior en caso de existir y evitar problemas
         archivo = open(nombreArchivo, mode='w') #encoding="utf-8", 
@@ -225,20 +255,25 @@ class Laberinto:
                 booleanoO = self.matriz[fila][columna].caminos['o']['camino']
                 lineaEscribir = "n," + str(booleanoN) + ",s," + str(booleanoS) + ",e," + str(booleanoE) + ",o," + str(booleanoO) 
 
-
-
                 #If para añadir el salto de línea y que no me quede una vacía al final
                 if(fila == (self.altura -1) and columna == (self.ancho -1)):
                     #Solo añado y no le pongo el salto de línea
                     archivo.write(lineaEscribir)
-                else:
-                    
+                else:      
                     #No es la última línea, le pongo el salto
                     lineaEscribir += "\n"
                     archivo.write(lineaEscribir)
 
         archivo.close()
 
+    """
+    Este método permite interpretar el contenido de un archivo .txt para cargar el laberinto.
+    Pre-condiciones: Se debe ejecutar previamente el método generarMatriz para que la matriz no se encuentre vacía.
+                     Se debe haber ejecutado previamente el método guardarEnArchivo para tener un archivo válido de laberinto, de lo contrario
+                     no se cargará el laberinto.
+    Entrada: rutaArchivo. Es la ruta donde está alojado el archivo que se intentará cargar
+    Post-condición: Ahora el atributo matriz de esta clase contendrá el laberinto cargado del archivo en caso de ser este uno válido generado previamente por la aplicación
+    """
     def leerLaberintoDeArchivo(self, rutaArchivo):
         if os.path.exists(rutaArchivo):
             if(self.totalLineasArchivo(rutaArchivo) > 0):
@@ -251,7 +286,7 @@ class Laberinto:
                         if(primeraLinea):
                             #Estoy en la primera línea, verifico que el texto sea el correcto
                             if(linea.rstrip('\n') == "" or linea.rstrip('\n')  != "Laberinto"):
-                                return False #No es un archivo apto para leersh
+                                return False #No es un archivo apto para leer
                             primeraLinea = False
                         else:
                             #Después de la primera línea tengo que leer la cantidad de filas y columnas
@@ -261,7 +296,7 @@ class Laberinto:
                                 self.matriz = [[ElementoLaberinto() for _ in range(self.ancho)] for _ in range(self.altura)]
                                 lineaDimensiones = False
                             else:
-                                #Ya tocaría leersh todas las demás líneas
+                                #Ya tocaría leer todas las demás líneas
                             
                                 listaParedes = linea.rstrip('\n').split(",")
                                 #Tengo que poner los boleanos indicando las paredes
@@ -298,10 +333,15 @@ class Laberinto:
                     return True
 
             else:
-                return False #El archivo no tenía líneas para leersh
+                return False #El archivo no tenía líneas para leer
         else:
             return False
 
+    """
+    Este método permite contar la cantidad de líneas que contiene un archivo. 
+    Entrada: rutaArchivo. Ruta del archivo que se leerá
+    Salida: Se retorna la cantidad de líneas que contiene el archivo
+    """
     def totalLineasArchivo(self, rutaArchivo):
         contador = 0
         archivo = open(rutaArchivo, mode="r")
@@ -311,9 +351,10 @@ class Laberinto:
             contador += 1
         return contador
 
+    """
+    Método para obtener la matriz.
+    Entrada: ninguna
+    Salida: Se retorna el atributo matriz de esta clase
+    """
     def obtenerMatriz(self):
         return self.matriz
-    
-#a = Laberinto(5,5,"c:/Users/Dylan/Documents/Laberinto_PY01_Analisis/uploads/laberintoPruebaMediaNoche.txt")
-#a.guardarEnArchivo("C:/Users/Dylan/Documents/Laberinto_PY01_Analisis/laberintoPruebaMediaNoche.txt")
-#a.normalizarLaberinto()
